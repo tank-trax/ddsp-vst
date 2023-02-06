@@ -44,11 +44,17 @@ add_subdirectory(externals/JUCE "${CMAKE_CURRENT_BINARY_DIR}/juce-bin" EXCLUDE_F
 add_subdirectory(externals/tensorflow/tensorflow/lite "${CMAKE_CURRENT_BINARY_DIR}/tensorflow-lite-bin" EXCLUDE_FROM_ALL)
 # TFLite CXX std needs to be explicitly set to C++20 in Visual Studio.
 target_compile_features(tensorflow-lite PUBLIC ${DDSP_CXX_STD})
-target_compile_options(tensorflow-lite PUBLIC -stdlib=libc++)
+if(APPLE)
+    target_compile_options(tensorflow-lite PUBLIC -stdlib=libc++)
+endif()
+
 
 # ------------------------- DDSP Binary Assets ------------------------ #
 
 juce_add_binary_data(Assets SOURCES ${DDSP_ASSETS})
+if("${CMAKE_SYSTEM}" MATCHES "Linux")
+    set_target_properties(Assets PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
 # ---------------------------- DDSP Effect ---------------------------- #
 
